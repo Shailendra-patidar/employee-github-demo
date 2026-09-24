@@ -1,0 +1,1 @@
+A basic Employee Management System project for learning Git and GitHub workflow.
