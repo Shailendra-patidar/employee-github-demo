@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from pydantic import BaseModel
 from sqlalchemy import create_engine, Column, Integer, String, Float, Boolean
 from sqlalchemy.orm import declarative_base, sessionmaker
 
@@ -22,6 +23,12 @@ SessionLocal = sessionmaker(
 
 Base = declarative_base()
 
+
+class EmployeeCreate(BaseModel):
+    name: str
+    age: int
+    department: str
+    salary: float
 
 # Employee table
 
@@ -56,3 +63,24 @@ def get_employees():
     db.close()
 
     return employees
+
+
+@app.post("/employees")
+def create_employee(employee: EmployeeCreate):
+    db = SessionLocal()
+
+    new_employee = Employee(
+        name=employee.name,
+        age=employee.age,
+        department=employee.department,
+        salary=employee.salary
+    )
+
+    db.add(new_employee)
+    db.commit()
+    db.refresh(new_employee)
+
+    db.close()
+
+    return new_employee
+
